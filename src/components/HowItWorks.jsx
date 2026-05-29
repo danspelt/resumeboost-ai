@@ -1,63 +1,41 @@
-import { PRICE_CAD } from "@/lib/constants";
-
 const steps = [
-  "Paste your resume",
-  "Paste the job posting",
-  "Pay securely with Stripe",
-  "Get your improved application package",
+  {
+    step: "01",
+    title: "Paste your resume",
+    body: "Drop in your current resume text — no formatting headaches required.",
+  },
+  {
+    step: "02",
+    title: "Add the job posting",
+    body: "We analyze the role so every output speaks to what the employer wants.",
+  },
+  {
+    step: "03",
+    title: "Pay securely",
+    body: "One-time $29 CAD via Stripe. No subscription. No hidden fees.",
+  },
+  {
+    step: "04",
+    title: "Copy your package",
+    body: "Get your full application kit in minutes. Copy or download instantly.",
+  },
 ];
 
 export default function HowItWorks() {
   return (
-    <section id="how-it-works" className="border-t border-slate-200 bg-slate-50">
-      <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
-        <h2 className="text-3xl font-bold text-slate-900">How it works</h2>
-        <ol className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {steps.map((step, index) => (
-            <li
-              key={step}
-              className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm"
-            >
-              <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-indigo-600 text-sm font-semibold text-white">
-                {index + 1}
-              </span>
-              <p className="mt-4 font-medium text-slate-900">{step}</p>
-            </li>
+    <section id="how-it-works" className="border-t border-white/5 bg-[#0a1020] px-4 py-20 sm:px-6">
+      <div className="mx-auto max-w-6xl">
+        <h2 className="font-display text-center text-3xl font-bold sm:text-4xl">
+          From paste to paid in under 5 minutes
+        </h2>
+        <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          {steps.map((item) => (
+            <article key={item.step} className="card p-6">
+              <span className="font-display text-3xl font-bold text-cyan-400/80">{item.step}</span>
+              <h3 className="mt-4 font-display text-lg font-semibold">{item.title}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-slate-400">{item.body}</p>
+            </article>
           ))}
-        </ol>
-      </div>
-    </section>
-  );
-}
-
-export function PricingCard() {
-  const features = [
-    "Improved resume summary",
-    "Stronger experience bullets",
-    "Tailored cover letter",
-    "Interview answer pack",
-    "Salary expectation answer",
-    "LinkedIn headline suggestion",
-  ];
-
-  return (
-    <section className="border-t border-slate-200">
-      <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
-        <div className="mx-auto max-w-lg rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
-          <p className="text-sm font-medium uppercase tracking-wide text-indigo-600">
-            One-time package
-          </p>
-          <p className="mt-2 text-4xl font-bold text-slate-900">
-            ${PRICE_CAD} <span className="text-lg font-medium text-slate-500">CAD</span>
-          </p>
-          <ul className="mt-6 space-y-3 text-slate-600">
-            {features.map((feature) => (
-              <li key={feature} className="flex gap-2">
-                <span className="text-indigo-600">✓</span>
-                <span>{feature}</span>
-              </li>
-            ))}
-          </ul>
         </div>
       </div>
     </section>

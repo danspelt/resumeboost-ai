@@ -1,7 +1,7 @@
 import { PRICE_CAD, PRICE_CENTS, PRODUCT_NAME } from "./constants";
 import { getStripe } from "./stripe";
-import { generateOrderResult } from "./ai";
-import { getOrderById, updateOrder } from "./orders";
+import { fulfillOrderById } from "./fulfillment";
+import { updateOrder } from "./orders";
 
 export async function createCheckoutSession(order) {
   const stripe = getStripe();
@@ -55,20 +55,7 @@ export async function fulfillPaidOrder(sessionId) {
     throw new Error("Missing order metadata on Stripe session");
   }
 
-  const order = await getOrderById(orderId);
-  if (!order) {
-    throw new Error("Order not found");
-  }
-
-  if (order.paymentStatus !== "paid") {
-    await updateOrder(orderId, {
-      paymentStatus: "paid",
-      stripeSessionId: session.id,
-    });
-  }
-
-  const result = await generateOrderResult(orderId);
-  return { orderId, result };
+  return fulfillOrderById(orderId, session.id);
 }
 
 export { PRICE_CAD };

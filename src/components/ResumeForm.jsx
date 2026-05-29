@@ -12,6 +12,9 @@ const initialForm = {
   tone: TONE_OPTIONS[0],
 };
 
+const MIN_RESUME = 100;
+const MIN_JOB = 80;
+
 export default function ResumeForm({ canceled = false }) {
   const [form, setForm] = useState(initialForm);
   const [error, setError] = useState("");
@@ -24,6 +27,16 @@ export default function ResumeForm({ canceled = false }) {
   async function handleSubmit(event) {
     event.preventDefault();
     setError("");
+
+    if (form.resumeText.trim().length < MIN_RESUME) {
+      setError(`Please paste at least ${MIN_RESUME} characters of resume text.`);
+      return;
+    }
+    if (form.jobPostingText.trim().length < MIN_JOB) {
+      setError(`Please paste at least ${MIN_JOB} characters from the job posting.`);
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -46,19 +59,15 @@ export default function ResumeForm({ canceled = false }) {
   }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="mx-auto max-w-3xl space-y-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8"
-    >
+    <form onSubmit={handleSubmit} className="card p-6 sm:p-8">
       {canceled ? (
-        <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-          Payment was canceled. Your draft is still here — continue when you are
-          ready.
+        <div className="mb-6 rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-100">
+          Payment canceled — your info is still here. Continue when ready.
         </div>
       ) : null}
 
       {error ? (
-        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <div className="mb-6 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-200">
           {error}
         </div>
       ) : null}
@@ -69,7 +78,7 @@ export default function ResumeForm({ canceled = false }) {
             required
             value={form.fullName}
             onChange={(event) => updateField("fullName", event.target.value)}
-            className={inputClass}
+            className="input-field"
             placeholder="Jane Doe"
           />
         </Field>
@@ -79,80 +88,99 @@ export default function ResumeForm({ canceled = false }) {
             type="email"
             value={form.email}
             onChange={(event) => updateField("email", event.target.value)}
-            className={inputClass}
+            className="input-field"
             placeholder="you@email.com"
           />
         </Field>
       </div>
 
-      <Field label="Target job title" required>
-        <input
-          required
-          value={form.targetJobTitle}
-          onChange={(event) => updateField("targetJobTitle", event.target.value)}
-          className={inputClass}
-          placeholder="Senior Full-Stack Developer"
-        />
-      </Field>
+      <div className="mt-6">
+        <Field label="Target job title" required>
+          <input
+            required
+            value={form.targetJobTitle}
+            onChange={(event) => updateField("targetJobTitle", event.target.value)}
+            className="input-field"
+            placeholder="Senior Full-Stack Developer"
+          />
+        </Field>
+      </div>
 
-      <Field label="Tone" required>
-        <select
-          value={form.tone}
-          onChange={(event) => updateField("tone", event.target.value)}
-          className={inputClass}
+      <div className="mt-6">
+        <Field label="Tone" required>
+          <select
+            value={form.tone}
+            onChange={(event) => updateField("tone", event.target.value)}
+            className="input-field"
+          >
+            {TONE_OPTIONS.map((tone) => (
+              <option key={tone} value={tone}>
+                {tone}
+              </option>
+            ))}
+          </select>
+        </Field>
+      </div>
+
+      <div className="mt-6">
+        <Field
+          label="Current resume text"
+          required
+          hint={`${form.resumeText.length} chars · min ${MIN_RESUME}`}
         >
-          {TONE_OPTIONS.map((tone) => (
-            <option key={tone} value={tone}>
-              {tone}
-            </option>
-          ))}
-        </select>
-      </Field>
+          <textarea
+            required
+            rows={10}
+            value={form.resumeText}
+            onChange={(event) => updateField("resumeText", event.target.value)}
+            className="input-field resize-y"
+            placeholder="Paste your full resume here..."
+          />
+        </Field>
+      </div>
 
-      <Field label="Current resume text" required>
-        <textarea
+      <div className="mt-6">
+        <Field
+          label="Job posting text"
           required
-          rows={10}
-          value={form.resumeText}
-          onChange={(event) => updateField("resumeText", event.target.value)}
-          className={inputClass}
-          placeholder="Paste your current resume here..."
-        />
-      </Field>
-
-      <Field label="Job posting text" required>
-        <textarea
-          required
-          rows={10}
-          value={form.jobPostingText}
-          onChange={(event) => updateField("jobPostingText", event.target.value)}
-          className={inputClass}
-          placeholder="Paste the job posting here..."
-        />
-      </Field>
+          hint={`${form.jobPostingText.length} chars · min ${MIN_JOB}`}
+        >
+          <textarea
+            required
+            rows={10}
+            value={form.jobPostingText}
+            onChange={(event) => updateField("jobPostingText", event.target.value)}
+            className="input-field resize-y"
+            placeholder="Paste the full job description here..."
+          />
+        </Field>
+      </div>
 
       <button
         type="submit"
         disabled={loading}
-        className="w-full rounded-lg bg-indigo-600 px-6 py-3 text-base font-semibold text-white transition hover:bg-indigo-500 disabled:cursor-not-allowed disabled:opacity-60"
+        className="btn-primary mt-8 w-full px-6 py-4 text-base disabled:cursor-not-allowed disabled:opacity-60"
       >
-        {loading ? "Redirecting to Stripe..." : "Continue to Payment — $29 CAD"}
+        {loading ? "Redirecting to secure checkout..." : "Continue to payment — $29 CAD"}
       </button>
+      <p className="mt-4 text-center text-xs text-slate-500">
+        Secured by Stripe · One-time payment · Results in ~2 minutes
+      </p>
     </form>
   );
 }
 
-function Field({ label, required, children }) {
+function Field({ label, required, hint, children }) {
   return (
-    <label className="block space-y-2">
-      <span className="text-sm font-medium text-slate-700">
-        {label}
-        {required ? " *" : ""}
-      </span>
+    <label className="block">
+      <div className="mb-2 flex items-center justify-between gap-2">
+        <span className="text-sm font-medium text-slate-200">
+          {label}
+          {required ? " *" : ""}
+        </span>
+        {hint ? <span className="text-xs text-slate-500">{hint}</span> : null}
+      </div>
       {children}
     </label>
   );
 }
-
-const inputClass =
-  "w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 shadow-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200";

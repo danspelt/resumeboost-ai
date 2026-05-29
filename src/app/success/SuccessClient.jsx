@@ -5,17 +5,27 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import SiteHeader from "@/components/SiteHeader";
 
+const steps = [
+  "Confirming payment",
+  "Analyzing job posting",
+  "Generating your package",
+];
+
 export default function SuccessClient() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const sessionId = searchParams.get("session_id");
-  const [message, setMessage] = useState("Confirming your payment...");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [stepIndex, setStepIndex] = useState(0);
 
   useEffect(() => {
     if (!sessionId) {
-      setMessage("Missing payment session. Please contact support if you were charged.");
       return;
     }
+
+    const interval = setInterval(() => {
+      setStepIndex((current) => (current + 1) % steps.length);
+    }, 2500);
 
     async function confirmPayment() {
       try {
@@ -30,28 +40,35 @@ export default function SuccessClient() {
           throw new Error(data.error || "Unable to confirm payment");
         }
 
+        clearInterval(interval);
         router.replace(`/result/${data.orderId}`);
       } catch (error) {
-        setMessage(error.message);
+        clearInterval(interval);
+        setErrorMessage(error.message);
       }
     }
 
     confirmPayment();
+    return () => clearInterval(interval);
   }, [sessionId, router]);
+
+  const message = !sessionId
+    ? "Missing payment session. Contact support if you were charged."
+    : errorMessage || "Confirming your payment...";
 
   return (
     <>
       <SiteHeader />
-      <main className="mx-auto flex min-h-[60vh] max-w-2xl flex-col items-center justify-center px-4 py-16 text-center">
-        <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
-          <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-4 border-indigo-200 border-t-indigo-600" />
-          <h1 className="text-2xl font-bold text-slate-900">Payment received</h1>
-          <p className="mt-3 text-slate-600">{message}</p>
+      <main className="flex min-h-[70vh] items-center justify-center px-4 py-16">
+        <div className="card w-full max-w-md p-8 text-center">
+          <div className="mx-auto mb-6 h-12 w-12 animate-spin rounded-full border-4 border-cyan-500/20 border-t-cyan-400" />
+          <h1 className="font-display text-2xl font-bold">Payment received</h1>
+          <p className="mt-3 text-slate-400">{message}</p>
+          {sessionId && !errorMessage ? (
+            <p className="mt-6 text-sm font-medium text-cyan-300">{steps[stepIndex]}…</p>
+          ) : null}
           {!sessionId ? (
-            <Link
-              href="/start"
-              className="mt-6 inline-block rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white"
-            >
+            <Link href="/start" className="btn-primary mt-6 inline-flex px-4 py-2 text-sm">
               Back to form
             </Link>
           ) : null}

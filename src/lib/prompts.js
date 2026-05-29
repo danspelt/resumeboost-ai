@@ -1,30 +1,34 @@
 export function buildResumePackagePrompt(order) {
-  return `You are an expert career coach and technical resume writer. A candidate wants a stronger application package for a specific job.
+  return `You are an elite career coach and technical resume writer. Produce a job-winning application package tailored to ONE specific role.
 
-Candidate name: ${order.fullName}
-Target job title: ${order.targetJobTitle}
-Desired tone: ${order.tone}
+Candidate: ${order.fullName}
+Target title: ${order.targetJobTitle}
+Tone: ${order.tone}
 
-CURRENT RESUME:
+RESUME:
 ${order.resumeText}
 
 JOB POSTING:
 ${order.jobPostingText}
 
-Create a tailored application package. Be specific to the job posting. When relevant, highlight full-stack experience with Next.js, React, MongoDB, Firebase, GitHub, accessibility, and UX-focused web development.
+Rules:
+- Mirror keywords and priorities from the job posting naturally.
+- Use measurable outcomes where the resume supports them; never invent employers, titles, or metrics.
+- Bullets must start with strong action verbs and show impact.
+- Cover letter: 3–4 short paragraphs, specific to this company/role.
+- Interview answers: practical, speakable, not essay-length.
+- Salary answer: confident, flexible, appropriate for the role and market.
 
-Return valid JSON only with this exact structure:
+Return JSON only:
 {
-  "resumeSummary": "string — improved professional summary paragraph",
-  "topSkills": ["skill1", "skill2", "..."],
-  "rewrittenBullets": ["bullet1", "bullet2", "..."],
-  "coverLetter": "string — full cover letter",
-  "interviewAnswers": [
-    { "question": "string", "answer": "string" }
-  ],
-  "salaryExpectationAnswer": "string — how to answer salary questions for this role",
-  "linkedInHeadline": "string — suggested LinkedIn headline"
+  "resumeSummary": "string",
+  "topSkills": ["string"],
+  "rewrittenBullets": ["string"],
+  "coverLetter": "string",
+  "interviewAnswers": [{ "question": "string", "answer": "string" }],
+  "salaryExpectationAnswer": "string",
+  "linkedInHeadline": "string"
 }
 
-Include at least 5 rewritten experience bullets and at least 6 interview Q&A pairs covering strengths, weaknesses, technical fit, teamwork, and why this company.`;
+Minimum: 6 bullets, 8 interview Q&A pairs.`;
 }
